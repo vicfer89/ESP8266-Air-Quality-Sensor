@@ -1,12 +1,6 @@
 /*
-  Rui Santos
-  Complete project details at https://RandomNerdTutorials.com
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files.
-  
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
+  Victor Fernández Fernández
+  Air Quality Sensor AP - ESP826 & CCS811
 */
 
 // Import required libraries
@@ -18,70 +12,68 @@
 #include "CCS811.h"
 #include <string.h>
 
-CCS811 sensor;
+#define SENSOR_CICLE 300
 
+CCS811 sensor;
+int eCO2_LastLecture = 0;
+int TVOC_LastLecture = 0;
+int eCO2_MAX = 0;
+int TVOC_MAX = 0;
+
+// IP Address configuration
 
 // Replace with your network credentials
-const char* ssid = "VFF_ESP8266";
-const char* password = "123456789";
-
-// Set LED GPIO
-const int ledPin = 2;
-// Stores LED state
-String ledState;
+const char* ssid = "AirQualitySensor";
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
-String getECO2() {
-  float eCO2 = (float) sensor.getCO2PPM();
-  Serial.println(eCO2);
-  return String(eCO2);
+int last_time = 0;
+
+String getECO2() {  
+  return String(eCO2_LastLecture);
 }
   
 String getTVOC() {
-  float TVOC = (float) sensor.getTVOCPPB();
-  Serial.println(TVOC);
-  return String(TVOC);
+  return String(TVOC_LastLecture);
+}
+
+String getECO2_Max() {  
+  return String(eCO2_MAX);
+}
+  
+String getTVOC_Max() {
+  return String(TVOC_MAX);
 }
 
 // Replaces placeholder with LED state value
 String processor(const String& var){
-  Serial.println(var);
   if (var == "ECO2_LECTURE"){
     return getECO2();
   }
   else if (var == "TVOC_LECTURE"){
     return getTVOC();
   }
+  else  if (var == "ECO2_MAX"){
+    return getECO2_Max();
+  }
+  else if (var == "TVOC_MAX"){
+    return getTVOC_Max();
+  }
 }
  
 void setup(){
   // Serial port for debugging purposes
   Serial.begin(115200);
-  pinMode(ledPin, OUTPUT);
 
-  // Initialize the sensor
-  /*if (!bme.begin(0x76)) {
-    Serial.println("Could not find a valid BME280 sensor, check wiring!");
-    while (1);
-  }*/
-
-  // Initialize SPIFFS
+  // Initialize FileSystem
   if(!SPIFFS.begin()){
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
   delay(100);
 
-  // Connect to Wi-Fi
-  //WiFi.mode(WIFI_AP);
-  //WiFi.begin(ssid, password);
-  /*while (WiFi.status() != WL_CONNECTED) {
-    Serial.println(".");
-    delay(1000);
-  }*/
-  WiFi.softAP(ssid, password);
+  WiFi.softAP(ssid);
 
   // Print ESP32 Local IP Address
   Serial.println(WiFi.softAPIP());
@@ -91,7 +83,8 @@ void setup(){
         delay(1000);
     }
 
-     sensor.setMeasCycle(sensor.eCycle_250ms);
+  // Initialize Sensor CCS811
+  sensor.setMeasCycle(sensor.eCycle_250ms);
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -111,10 +104,25 @@ void setup(){
     request->send_P(200, "text/plain", getTVOC().c_str());
   });
 
+  server.on("/eco2_max", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", getECO2_Max().c_str());
+  });
+  
+  server.on("/tvoc_max", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", getTVOC_Max().c_str());
+  });
+
   // Start server
   server.begin();
 }
  
 void loop(){
-  
+
+  if(abs(millis() - last_time) > SENSOR_CICLE)
+  {
+    eCO2_LastLecture = ;
+    TVOC_LastLecture = (int) sensor.getTVOCPPB();
+    eCO2_MAX = max(eCO2_LastLecture, eCO2_MAX);
+    TVOC_MAX = max(TVOC_LastLecture, TVOC_MAX);
+  }
 }

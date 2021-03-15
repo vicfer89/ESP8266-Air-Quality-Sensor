@@ -14,11 +14,13 @@
   <p>
     <span class="sensor-labels">eCO2</span>
     <span id="eco2_lecture">%ECO2_LECTURE%</span>
+	(<span id="eco2_max">%ECO2_MAX%</span>)
     <sup class="units">ppm</sup>
   </p>
   <p>
     <span class="sensor-labels">TVOC</span>
     <span id="tvoc_lecture">%TVOC_LECTURE%</span>
+	(<span id="tvoc_max">%TVOC_MAX%</span>)
     <sup class="units">ppb</sup>
   </p>
   <p>
@@ -72,5 +74,26 @@
     xhttp.send();
   }, 1000 ) ;
 
+    setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("eco2_max").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/eco2_max", true);
+    xhttp.send();
+  }, 1000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("tvoc_max").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/tvoc_max", true);
+    xhttp.send();
+  }, 1000 ) ;
 </script>
 </html>
