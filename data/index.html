@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- 
+  Víctor Fernández Fernández
+-->
+<html>
+<head>  
+  <title>ESP8266 Air Quality Web Service</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <h1>ESP8266 Air Quality Web Service</h1>  
+  <p>
+    <span class="sensor-labels">eCO2</span>
+    <span id="eco2_lecture">%ECO2_LECTURE%</span>
+    <sup class="units">ppm</sup>
+  </p>
+  <p>
+    <span class="sensor-labels">TVOC</span>
+    <span id="tvoc_lecture">%TVOC_LECTURE%</span>
+    <sup class="units">ppb</sup>
+  </p>
+  <p>
+	<table>
+		<tr> 
+			<th> Estado </th>
+			<th> eCO2 </th>
+			<th> TVOC </th>
+		</tr>
+		<tr> 
+			<th> Alto </th>
+			<th> > 1000 ppm </th>
+			<th> > 2000 ppb </th>
+		</tr>
+		<tr> 
+			<th> Medio </th>
+			<th> 400 - 1000 ppm </th>
+			<th> 250 - 2000 ppb </th>
+		</tr>
+		<tr> 
+			<th> Bajo </th>
+			<th> < 400 ppm </th>
+			<th> < 250 ppb </th>
+		</tr>
+	</table>
+  </p>
+</body>
+<footer>
+	<p class = "footer">Victor Fernández Fernández (C) 2021<p>
+</footer>
+<script>
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("eco2_lecture").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/eco2_lecture", true);
+    xhttp.send();
+  }, 1000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("tvoc_lecture").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/tvoc_lecture", true);
+    xhttp.send();
+  }, 1000 ) ;
+
+</script>
+</html>
