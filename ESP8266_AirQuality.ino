@@ -10,15 +10,20 @@
 #include <FS.h>
 #include <Wire.h>
 #include "CCS811.h"
+#include "AHT10.h"
 #include <string.h>
 
 #define SENSOR_CICLE 300
 
 CCS811 sensor;
+AHT10 aht_sensor;
+
 int eCO2_LastLecture = 0;
 int TVOC_LastLecture = 0;
 int eCO2_MAX = 0;
 int TVOC_MAX = 0;
+int temperature = 0;
+int humedad = 0;
 
 // IP Address configuration
 
@@ -86,6 +91,12 @@ void setup(){
   // Initialize Sensor CCS811
   sensor.setMeasCycle(sensor.eCycle_250ms);
 
+   while(aht_sensor.begin() != 0)
+   {
+        Serial.println("failed to init AHT chip, please check if the chip connection is fine");
+        delay(1000);
+   }
+
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/index.html", String(), false, processor);
@@ -120,7 +131,7 @@ void loop(){
 
   if(abs(millis() - last_time) > SENSOR_CICLE)
   {
-    eCO2_LastLecture = ;
+    eCO2_LastLecture = (int) sensor.getCO2PPM();
     TVOC_LastLecture = (int) sensor.getTVOCPPB();
     eCO2_MAX = max(eCO2_LastLecture, eCO2_MAX);
     TVOC_MAX = max(TVOC_LastLecture, TVOC_MAX);
