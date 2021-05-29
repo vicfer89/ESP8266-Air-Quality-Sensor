@@ -1,6 +1,19 @@
 /*
   Victor Fernández Fernández
   Air Quality Sensor AP - ESP826 & CCS811
+
+  Conexionado:
+    I2C BUS:
+      + SCL -> D1
+      + DSA -> D2
+    Alimentaciones:
+      + AHT10: +3.3 V
+      + BMP280: +3.3 V
+      + CCS811: + 5 V (Vin)
+    CCS811:
+      + Wake -> GND
+      + Int -> N/C
+      + RST -> N/C
 */
 
 // Import required libraries
@@ -12,11 +25,16 @@
 #include "CCS811.h"
 #include "AHT10.h"
 #include <string.h>
+#include <Adafruit_BMP280.h>
+#include <Adafruit_AHT10.h>
+
+
 
 #define SENSOR_CICLE 300
 
 CCS811 sensor;
-AHT10 aht_sensor;
+Adafruit_AHT10 aht;
+Adafruit_BMP280 bmp; //bmp.begin(BMP280_ADDRESS_ALT, BMP280_CHIPID)
 
 int eCO2_LastLecture = 0;
 int TVOC_LastLecture = 0;
