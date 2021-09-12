@@ -36,7 +36,7 @@
 
 #define CCS811_HW_ID                             0x81
 //Open the macro to see the detailed program execution process.
-//#define ENABLE_DBG
+#define ENABLE_DBG
 
 #ifdef ENABLE_DBG
 #define DBG(...) {Serial.print("[");Serial.print(__FUNCTION__); Serial.print("(): "); Serial.print(__LINE__); Serial.print(" ] "); Serial.println(__VA_ARGS__);}

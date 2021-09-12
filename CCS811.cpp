@@ -3,7 +3,7 @@
 int CCS811::begin(void)
 {
     uint8_t id=0;
-    Wire.begin();
+    Wire.begin(4,5); //SDA,SCL
     softReset();
     delay(100);
     if(readReg(CCS811_REG_HW_ID,&id,1) != 1){DBG("");
@@ -16,7 +16,8 @@ int CCS811::begin(void)
         delay(1);
         return ERR_IC_VERSION;
     }
-    writeReg(CCS811_BOOTLOADER_APP_START, NULL, 0);
+    uint8_t _pBuf;
+    writeReg(CCS811_BOOTLOADER_APP_START, &_pBuf, 0);
     setMeasurementMode(0,0,eMode4);
     setInTempHum(25, 50);
     return ERR_OK;

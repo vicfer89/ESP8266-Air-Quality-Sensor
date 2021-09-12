@@ -23,6 +23,16 @@
 	(<span id="tvoc_max">%TVOC_MAX%</span>)
     <sup class="units">ppb</sup>
   </p>
+    <p>
+    <span class="sensor-labels">HR</span>
+    <span id="tvoc_lecture">%HR_LECTURE%</span>
+    <sup class="units">%</sup>
+  </p>
+    <p>
+    <span class="sensor-labels">TEMP</span>
+    <span id="tvoc_lecture">%TEMP_LECTURE%</span>
+    <sup class="units">ºC</sup>
+  </p>
   <p>
 	<table>
 		<tr> 
@@ -93,6 +103,28 @@
       }
     };
     xhttp.open("GET", "/tvoc_max", true);
+    xhttp.send();
+  }, 1000 ) ;
+  
+    setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("hr_lecture").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/hr_lecture", true);
+    xhttp.send();
+  }, 1000 ) ;
+  
+      setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("temp_lecture").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/temp_lecture", true);
     xhttp.send();
   }, 1000 ) ;
 </script>
